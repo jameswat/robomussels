@@ -8,6 +8,21 @@ install-repos:
     - name: /etc/yum.repos.d/mongodb.repo
     - template: jinja
 
+
+# add files for security
+set_sshd:
+  file:
+    - managed
+    - source: salt://base/files/security/sshd_config.jin
+    - name: /etc/ssh/sshd_config
+    - template: jinja
+set_sudoers:
+  file:
+    - managed
+    - source: salt://base/files/security/sudoers.jin
+    - name: /etc/sudoers
+    - template: jinja
+
 install-basic:
   # Install prerequisites
   pkg:
@@ -24,6 +39,7 @@ install-basic:
       - fail2ban
       - wget
       - nc
+      - telnet
       - mongodb-org
 
 blieberman:
@@ -51,6 +67,14 @@ salt-minion:
     - name: salt-minion
     - require:
       - pkg: salt-minion
+
+set_mongo:
+# mongod customizations
+  file:
+    - managed
+    - source: salt://base/files/mongodb/mongod.conf.jin
+    - name: /etc/mongod.conf
+    - template: jinja
 
 mongodb:
   service:
