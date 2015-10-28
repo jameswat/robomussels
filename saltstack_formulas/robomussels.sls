@@ -41,6 +41,8 @@ install-basic:
       - nc
       - telnet
       - mongodb-org
+      - httpd
+      - vsftpd
 
 blieberman:
   user.present:
@@ -83,3 +85,19 @@ mongodb:
     - name: mongod
     - require:
       - pkg: mongodb-org
+
+httpd:
+  service:
+    - running
+    - enable: Trueserv
+    - name: httpd
+    - require:
+      - pkg: httpd
+
+vsftpd:
+  service:
+    - running
+    - enable: Trueserv
+    - name: vsftpd
+    - require:
+      - pkg: vsftpd
