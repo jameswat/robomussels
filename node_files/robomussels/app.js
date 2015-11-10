@@ -4,7 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoOp     =   require('./model/mongo');
+
+var mongoOp  =   require('./model/mongo');
+var biomimic =   require('./model/mongo');
 
 //MongoDB:
 var mongo = require('mongodb');

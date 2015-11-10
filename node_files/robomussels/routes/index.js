@@ -7,63 +7,74 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+/* Call back function for return JSON response     */
+function callback(err, data, res){
+	// Mongo command to fetch all data from collection.
+    if(err) {
+    	response = {"error" : true,"message" : "Error fetching data"};
+    } else {
+        response = {"error" : false,"message" : data};
+    }
+    res.json(response);   
+}
 
-/* GET all robo data*/
-router.get('/roboall', function(req,res){
-     var response = {};
-     mongoOp.find({},function(err,data){
-                  // Mongo command to fetch all data from collection.
-                  if(err) {
-                  response = {"error" : true,"message" : "Error fetching data"};
-                  } else {
-                  response = {"error" : false,"message" : data};
-                  }
-                  res.json(response);
-                  });
-     });
-
-
-/* GET robomussel */
-router.get('/robomussel', function(req,res){
-     var response = {};
-     mongoOp.find({"biomimic":"robomussel"},function(err,data){
-                  // Mongo command to fetch all data from collection.
-                  if(err) {
-                  response = {"error" : true,"message" : "Error fetching data"};
-                  } else {
-                  response = {"error" : false,"message" : data};
-                  }
-                  res.json(response);
-                  });
-     });
+/* Parse the request to find all query parameters */
+function getCondition(req){
+	 var condition = {}
+	 
+	 // Add biomimic to query
+	 if(req.query.biomimic != null){
+     	condition.biomimic=req.query.biomimic
+     }     
+	 // Add region to query
+     if(req.query.region !=  null){
+     	condition.region=req.query.region
+     }
+	 // Add location to query
+     if(req.query.location !=  null){
+     	condition.location=req.query.location
+     }
+	 // Add site to query
+     if(req.query.site != null){
+     	condition.site=req.query.site
+     }
+	 // Add zone to query
+     if(req.query.zone != null){
+     	condition.zone=req.query.zone
+     }
+	 // Add subzone to query
+	 if(req.query.subzone != null){
+     	condition.subzone=req.query.subzone
+     }
+	 // Add wavexp to query
+     if(req.query.waveexp != null){
+     	condition.waveexp=req.query.waveexp
+     }
+	 // Add dates to query
+     if(req.query.startDate != null){
+      	condition.data.Time.gte =  new Date(req.query.startDate)
+     	condition.data.Time.lt =  new Date(req.query.endDate)
+        //time = {'data.Time': {'$gte': new Date("2007-01-01"),
+        //				 			'$lt': new Date('2007-01-05')}}
+     }
      
-/* GET robomussel- USA */
-router.get('/robomussel/USA/', function(req,res){
-     var response = {};
-     mongoOp.find({"biomimic":"robomussel","country":"USA"},function(err,data){
-                  // Mongo command to fetch all data from collection.
-                  if(err) {
-                  response = {"error" : true,"message" : "Error fetching data"};
-                  } else {
-                  response = {"error" : false,"message" : data};
-                  }
-                  res.json(response);
-                  });
-     });
-     
-/* GET robomussel- USA - Alegria */
-router.get('/robomussel/USA/Alegria', function(req,res){
-     var response = {};
-     mongoOp.find({"biomimic":"robomussel","country":"USA", "location":"Alegria"},function(err,data){
-                  // Mongo command to fetch all data from collection.
-                  if(err) {
-                  response = {"error" : true,"message" : "Error fetching data"};
-                  } else {
-                  response = {"error" : false,"message" : data};
-                  }
-                  res.json(response);
-                  });
-     });
-     
+     return condition
+}
 
+/* Get the data entries using the request parameters */
+router.get('/data', function(req,res){    
+     var response = {}
+     var condition = getCondition(req)
+     mongoOp.find( condition,
+				  function(err,data){ callback(err,data,res);});})
+
+/* Get distinct filter options using the request paramaters */
+router.get('/filter/:param', function(req,res){
+     var condition = getCondition(req)
+     var param = req.params.param
+     var response = {}
+     mongoOp.distinct( param, 
+     				  condition,
+     				  function(err,data){ callback(err,data,res);})});
+  
 module.exports = router;

@@ -1,11 +1,11 @@
 var mongoose    =   require("mongoose");
 var db = mongoose.connection;
 db.on('error', console.error);
-mongoose.connect('mongodb://robodb01.blieberman.me/test_robomussel/');
+mongoose.connect('mongodb://robodb01.blieberman.me/robo_data/');
 // create instance of Schema
 var mongoSchema =   mongoose.Schema;
 // create schema
-var userScheme  = new mongoSchema({
+var roboScheme  = new mongoSchema({
                                   zone : String,
                                   biomimic : String,
                                   wave : String,
@@ -13,9 +13,8 @@ var userScheme  = new mongoSchema({
                                   site : String,
                                   location : String,
                                   country : String,
-                                  data : String,
-                                  }, { collection: 'posts' });
-
+                                  data : {time: Date, temperature: Number},
+                                  }, { collection: 'temp' });
 
 // create model if not exists.
-module.exports = mongoose.model('mongoOp',userScheme);
+module.exports = mongoose.model('mongoOp',roboScheme);
