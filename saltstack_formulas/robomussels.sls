@@ -59,6 +59,21 @@ AAAAB3NzaC1yc2EAAAADAQABAAABAQDM8+62VdEnGDkQIZsKfEDvmXjXdv0q1Ulpk5o0deI2Jkz/bD2D
     - user: blieberman
     - enc: ssh-rsa
 
+tseeber:
+  user.present:
+    - fullname: Tiffany Seeber
+    - shell: /bin/bash
+    - home: /home/tseeber
+    - uid: 301
+    - groups:
+      - wheel
+
+AAAAB3NzaC1yc2EAAAADAQABAAACAQDJ8R6Rqzzj0df7OwngKDne6WvH22wltkv9bATQCdSQYeDOpGOtJmH1fcyBf9IVAoQY51omKhii0oj/ZtMAvf67T5Odx7oehWlgXrIU71nOXG6QZZgp4J2NVCQAHlNcszj3jP/zOJWHUgAGzBfyt4H1rqBUcc5zXfefu3ttgb1sWp4KoIOe9CWgzoh8JoHycETT8ej9sIJZxmxqr9p2fBv82qYnlDK89GmE9Qk8OQHpe4MmIZS+tfWaQfy0YNIhjGvW95tvUH6oudKk483LjSvHb0/YWNWN5S/9kiM1jF2hU7NDdaTaPD4qQ8o9FE2JggcDWTotQToKPCIGgcYtkjvSiypUM1yDGJqGRAGnEgb6p59x9CD6GhBduCjhGItTqyvsbwfeg1/mm9myRkkWiJdt3b/K1c2gjyRBPeXh0O6L8a0lmbxbhnwWnHbGCdYP2gX6PunuuUn8RutJLQNFGbdqVjUm0pCGcy60p/XK0k5QENJSYCIDGqzQJKF2l1nRKJdQa7UQ9L/X6DAB2Pl0xOAT3NFhjQjefPgiUa6uOKOMXzktz7SMbHvrhQCn1QJTOy2A8iH48JCzMTecwkVyVwRHBcGhY5FPuswKCfd9BGgbjXBgiRyoah05EbqCGZdeQH25v3RBaqjhPBldg5nuql+B6/NFA03Mtt0LQ1a1wepq2w== seeber.t@husky.neu.edu:
+  ssh_auth:
+    - present
+    - user: tseeber
+    - enc: ssh-rsa
+
 salt-minion:
   pkg:
     - installed
@@ -101,3 +116,10 @@ vsftpd:
     - name: vsftpd
     - require:
       - pkg: vsftpd
+
+run-app:
+  # Use 'forever' to start the server
+  cmd:
+    - run
+    - name: forever start --watch ./bin/www
+    - cwd: /root/robomussels/node_files/robomussels
