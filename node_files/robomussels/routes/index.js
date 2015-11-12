@@ -21,7 +21,14 @@ function callback(err, data, res){
 /* Parse the request to find all query parameters */
 function getCondition(req){
 	 var condition = {}
-	 
+	 // Add subzone to query
+	 if(req.query.subzone != null){
+     	condition.subzone=req.query.subzone
+     }
+	 // Add zone to query
+     if(req.query.zone != null){
+     	condition.zone=req.query.zone
+     }
 	 // Add biomimic to query
 	 if(req.query.biomimic != null){
      	condition.biomimic=req.query.biomimic
@@ -30,25 +37,21 @@ function getCondition(req){
      if(req.query.region !=  null){
      	condition.region=req.query.region
      }
-	 // Add location to query
-     if(req.query.location !=  null){
-     	condition.location=req.query.location
+     // Add wavexp to query
+     if(req.query.waveexp != null){
+     	condition.waveexp=req.query.waveexp
      }
 	 // Add site to query
      if(req.query.site != null){
      	condition.site=req.query.site
      }
-	 // Add zone to query
-     if(req.query.zone != null){
-     	condition.zone=req.query.zone
+	 // Add location to query
+     if(req.query.location !=  null){
+     	condition.location=req.query.location
      }
-	 // Add subzone to query
-	 if(req.query.subzone != null){
-     	condition.subzone=req.query.subzone
-     }
-	 // Add wavexp to query
-     if(req.query.waveexp != null){
-     	condition.waveexp=req.query.waveexp
+	 // Add country to query
+     if(req.query.country !=  null){
+     	condition.country=req.query.country
      }
 	 // Add dates to query
      if(req.query.startDate != null){
