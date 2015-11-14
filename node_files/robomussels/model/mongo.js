@@ -13,7 +13,7 @@ var roboScheme  = new mongoSchema({
                                   site : String,
                                   location : String,
                                   country : String,
-                                  data : {time: Date, temperature: Number},
+                                  data : { Time: String, temperature: Number},
                                   }, { collection: 'temp' });
 
 // create model if not exists.
