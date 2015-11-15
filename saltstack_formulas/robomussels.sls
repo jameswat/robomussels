@@ -8,7 +8,6 @@ install-repos:
     - name: /etc/yum.repos.d/mongodb.repo
     - template: jinja
 
-
 # add files for security
 set_sshd:
   file:
@@ -22,6 +21,44 @@ set_sudoers:
     - source: salt://base/files/security/sudoers.jin
     - name: /etc/sudoers
     - template: jinja
+base-iptables:
+  pkg:
+    - installed
+    - name: iptables
+  file:
+    - managed
+    - source: salt://base/files/security/iptables.jin
+    - name: /etc/sysconfig/iptables
+    - template: jinja
+    - require:
+      - pkg: base-iptables
+  service:
+    - running
+    - enable: True
+    - name: iptables
+    - require:
+      - pkg: base-iptables
+    - watch:
+      - file: base-iptables
+  cmd:
+    - run
+    - name: service iptables restart
+    - require:
+      - file: base-iptables
+
+salt-minion:
+  pkg:
+    - installed
+    - name: salt-minion
+  service:
+    - running
+    - enable: Trueserv
+    - name: salt-minion
+    - require:
+      - pkg: salt-minion
+
+#######################################
+#######################################
 
 install-basic:
   # Install prerequisites
@@ -41,8 +78,11 @@ install-basic:
       - nc
       - telnet
       - mongodb-org
-      - httpd
+      - nginx
       - vsftpd
+
+#######################################
+#######################################
 
 blieberman:
   user.present:
@@ -74,26 +114,16 @@ AAAAB3NzaC1yc2EAAAADAQABAAACAQDJ8R6Rqzzj0df7OwngKDne6WvH22wltkv9bATQCdSQYeDOpGOt
     - user: tseeber
     - enc: ssh-rsa
 
-salt-minion:
-  pkg:
-    - installed
-    - name: salt-minion
-  service:
-    - running
-    - enable: Trueserv
-    - name: salt-minion
-    - require:
-      - pkg: salt-minion
+#######################################
+#######################################
 
-set_mongo:
-# mongod customizations
+mongo-customizations:
+  # place a custom mongodb config
   file:
     - managed
     - source: salt://base/files/mongodb/mongod.conf.jin
     - name: /etc/mongod.conf
     - template: jinja
-
-mongodb:
   service:
     - running
     - enable: Trueserv
@@ -101,13 +131,53 @@ mongodb:
     - require:
       - pkg: mongodb-org
 
-httpd:
+nginx-core-customizations:
+  # place a customized nginx config
+  file:
+    - managed
+    - source: salt://base/files/nginx/nginx.conf.jin
+    - name: /etc/nginx/nginx.conf
+    - template: jinja
+    - require:
+      - pkg: nginx
   service:
     - running
     - enable: Trueserv
-    - name: httpd
+    - name: nginx
     - require:
-      - pkg: httpd
+      - pkg: nginx
+
+nginx-www-customizations:
+  # place a customized nginx config
+  file:
+    - managed
+    - source: salt://base/files/nginx/robo-www.conf.jin
+    - name: /etc/nginx/conf.d/robo-www.conf
+    - template: jinja
+    - require:
+      - pkg: nginx
+  service:
+    - running
+    - enable: Trueserv
+    - name: nginx
+    - require:
+      - pkg: nginx
+
+nginx-api-customizations:
+  # place a customized nginx config
+  file:
+    - managed
+    - source: salt://base/files/nginx/robo-api.conf.jin
+    - name: /etc/nginx/conf.d/robo-api.conf
+    - template: jinja
+    - require:
+      - pkg: nginx
+  service:
+    - running
+    - enable: Trueserv
+    - name: nginx
+    - require:
+      - pkg: nginx
 
 vsftpd:
   service:

@@ -1,0 +1,15 @@
+### /srv/salt/base/files/nginx/robo-www.conf.jin ###
+##################################################
+
+server {
+    listen 80;
+    server_name robo.blieberman.me;
+
+    access_log /var/log/nginx/robo-www.access.log;
+    error_log /var/log/nginx/robo-www.error.log;
+
+    ## handle requests to robo static frontend ##
+    location / {
+      root /var/www/robo;
+    }
+}

@@ -1,0 +1,30 @@
+### /srv/salt/base/files/nginx/robo-api.conf.jin ###
+##################################################
+
+upstream robo-api {
+    server 127.0.0.1:3000;
+}
+
+server {
+    listen 80;
+    server_name api.robo.blieberman.me;
+
+    access_log /var/log/nginx/robo-api.access.log;
+    error_log /var/log/nginx/robo-api.error.log;
+
+    ## proxy requests to robo api backend ##
+    location / {                
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_set_header 'Access-Control-Allow-Origin' '*';
+        proxy_set_header 'Access-Control-Allow-Headers' 'X-Requested-With,Accept,Content-Type, Origin';
+
+        proxy_connect_timeout 300;
+        proxy_read_timeout 300;
+
+        proxy_pass http://robo-api;
+        proxy_redirect off;
+    }
+}
