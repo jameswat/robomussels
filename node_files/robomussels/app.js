@@ -11,7 +11,7 @@ var biomimic =   require('./model/mongo');
 //MongoDB:
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('db.robo.blieberman.me/mussels/');
+var db = monk('robodb01.blieberman.me/mussels/');
 
 var routes = require('./routes/index');
 //var users = require('./routes/users');

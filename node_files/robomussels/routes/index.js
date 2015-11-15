@@ -4,7 +4,7 @@ var mongoOp     =   require('../model/mongo');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Robo API' });
 });
 
 /* Call back function for return JSON response     */
