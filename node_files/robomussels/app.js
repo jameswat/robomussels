@@ -11,7 +11,7 @@ var biomimic =   require('./model/mongo');
 //MongoDB:
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('robodb01.blieberman.me/mussels/');
+var db = monk('db.robo.blieberman.me/mussels/');
 
 var routes = require('./routes/index');
 //var users = require('./routes/users');
@@ -32,14 +32,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         req.db = db;
         next();
 });
 
 app.use('/', routes);
-//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
