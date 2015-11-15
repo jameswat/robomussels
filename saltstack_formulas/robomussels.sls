@@ -114,6 +114,14 @@ AAAAB3NzaC1yc2EAAAADAQABAAACAQDJ8R6Rqzzj0df7OwngKDne6WvH22wltkv9bATQCdSQYeDOpGOt
     - user: tseeber
     - enc: ssh-rsa
 
+group6:
+  user.present:
+    - fullname: Group 6 FTP Service Account
+    - shell: /sbin/nologin
+    - home: /var/www/robo
+    - uid: 500
+    - password: $6$BXhsWIBe$DEE2o6VefTsMGYwtnkgNjA1RX4Vr3LgvjRAqg2/t4M2W0Ne7Agvcu0bpnsrLwwruzAlwaRfSWHBqEVihQHN1F.
+
 #######################################
 #######################################
 
@@ -186,6 +194,22 @@ vsftpd:
     - name: vsftpd
     - require:
       - pkg: vsftpd
+
+#######################################
+#######################################
+
+/var/www/robo:
+  file.directory:
+    - user: group6
+    - group: nginx
+    - mode: 755
+    - makedirs: True
+    - recurse:
+      - user
+      - group
+
+#######################################
+#######################################
 
 run-app:
   # Use 'forever' to start the server
