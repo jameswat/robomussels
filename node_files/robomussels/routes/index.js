@@ -49,6 +49,7 @@ function getCondition(req){
      if(req.query.location !=  null){
      	condition.location=req.query.location;
      }
+     
 	 // Add country to query
      if(req.query.country !=  null){
      	condition.country=req.query.country;
