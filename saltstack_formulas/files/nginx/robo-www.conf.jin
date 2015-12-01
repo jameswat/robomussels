@@ -5,11 +5,15 @@ server {
     listen 80;
     server_name robo.blieberman.me;
 
+    ## handle requests to robo static frontend ##
+    root /var/www/robo;
+
     access_log /var/log/nginx/robo-www.access.log;
     error_log /var/log/nginx/robo-www.error.log;
-
-    ## handle requests to robo static frontend ##
-    location / {
-      root /var/www/robo;
+   
+    ## password protect upload directory ##
+    location /upload {
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/.robo_htpasswd;
     }
 }

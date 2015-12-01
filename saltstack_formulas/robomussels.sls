@@ -155,6 +155,22 @@ nginx-core-customizations:
     - require:
       - pkg: nginx
 
+nginx-robo-www-customizations:
+  # place customized nginx htaccess credentials
+  file:
+    - managed
+    - source: salt://base/files/nginx/robo_htpasswd.jin
+    - name: /etc/nginx/.robo_htpasswd
+    - template: jinja
+    - require:
+      - pkg: nginx
+  service:
+    - running
+    - enable: Trueserv
+    - name: nginx
+    - require:
+      - pkg: nginx
+
 nginx-www-customizations:
   # place a customized nginx config
   file:
