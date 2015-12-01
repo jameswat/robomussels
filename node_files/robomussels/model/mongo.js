@@ -1,7 +1,7 @@
 var mongoose    =   require("mongoose");
 var db = mongoose.connection;
 db.on('error', console.error);
-mongoose.connect('mongodb://robodb01.blieberman.me/robo_data/');
+mongoose.connect('mongodb://robodb01.blieberman.me/data/');
 // create instance of Schema
 var mongoSchema =   mongoose.Schema;
 // create schema
