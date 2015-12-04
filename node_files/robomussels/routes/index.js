@@ -67,15 +67,41 @@ function getTimeCondition(req){
 
 /* Parse the request to query for potential math operations on data */
 function getMathOp(req){
-	if (req.query.mathOp == 1) {
-		return { _id:null, retVal: { $min : "$data.Temperature(C)" }}
+	var date_grouping = getDateGrouping(req);
+	if (req.query.mathOp == "min") {
+		return { _id: date_grouping , retVal: { $min : "$temp" }};
 	}
-	if (req.query.mathOp == 2) {
-		return { _id:null, retVal: { $max : "$data.Temperature(C)" }}
+	if (req.query.mathOp == "max") {
+		return { _id: date_grouping, retVal: { $max : "$temp" }};
 	}
-	if (req.query.mathOp == 3) {
-		return { _id:null, retVal: { $avg : "$data.Temperature(C)" }}
+	if (req.query.mathOp == "avg") {
+		return { _id: date_grouping, retVal: { $avg : "$temp" }};
 	}
+}
+
+/* Parses the request to group on date interval: yearly, daily, or monthly */
+function getDateGrouping(req){
+	var condition = {};
+	
+	condition.year = "$year" ;
+	if (req.query.interval == "yearly"){ return condition; }
+	
+	condition.month = "$month";
+	if (req.query.interval == "monthly"){return condition; }
+	
+	condition.day = "$day";	
+	return condition; 
+}
+
+/* Parses the date into years, months and days */
+function parseDates(req){
+	var condition = {};
+	condition.temp = "$data.Temperature(C)";
+	condition.year = 	{ $substr: ["$data.Time", 0, 4] };
+	condition.month = 	{ $substr: ["$data.Time", 5, 2] };
+	condition.day = 	{ $substr: ["$data.Time", 8, 2] };
+	
+	return condition;
 }
 
 /* Get the data entries using the request parameters */
@@ -83,25 +109,29 @@ router.get('/data', function(req,res){
 	var response = {};
      	var condition = getCondition(req);
      	var time_condition = getTimeCondition(req);
-        if (!req.query.mathOp) {
-		mongoOp.aggregate( {$match: condition},    // Filters on everything but date
-  				{$unwind: "$data"},    // Creates individual docs for time & temp
-  				{$match: time_condition},    // Filters on dates
-  				{$project:    // Creates new doc format
-  				{ _id:0,    //  -- leave out ID
-  				  time: "$data.Time",    //  -- Add time & temp fields
-  				  temp: "$data.Temperature(C)"}},
+        if (!req.query.mathOp && !req.query.interval) {
+			mongoOp.aggregate( {$match: condition},    // Filters on everything but date
+  				{$unwind: "$data"},    			// Creates individual docs for time & temp
+  				{$match: time_condition},    	// Filters on dates
+  				{$project:    					// Creates new doc format
+  					{ 	_id:0,    				//  -- leave out ID
+  				  		time: "$data.Time",    	//  -- Add time & temp fields
+  				  		temp: "$data.Temperature(C)"}},
 
-		function(err,data){ callback(err,data,res);});
-	}
-        if (req.query.mathOp) {
-		var math_operation = getMathOp(req);
-                mongoOp.aggregate( {$match: condition},    // Filters on everything but date
-                                {$unwind: "$data"},    // Creates individual docs for time & temp
-                                {$match: time_condition},    // Filters on dates
-				{$group: math_operation},    // query on math operation
-		function(err,data){ callback(err,data,res);});
-	}
+			function(err,data){ callback(err,data,res);});
+		} else if (req.query.mathOp && req.query.interval) {
+			var math_operation = getMathOp(req);
+			var date_interval = parseDates(req);
+        	mongoOp.aggregate( {$match: condition},    // Filters on everything but date
+                {$unwind: "$data"},   		 	// Creates individual docs for time & temp
+                {$match: time_condition},    	// Filters on dates
+                {$project : date_interval }, 	// Breaks down into: temp, year, month, day
+				{$group: math_operation },    	// Performs math operation and does grouping
+				function(err,data){ callback(err,data,res);} );
+		} else {
+			response = {"error": true, "message" : "Requires BOTH an operation & date interval or NEITHER."};
+        	res.json(response);
+		}
 })
 
 /* Upload new data using post paramaters */
